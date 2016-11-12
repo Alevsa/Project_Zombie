@@ -322,7 +322,6 @@ public class GridGenerator : MonoBehaviour {
 
     private IEnumerator BuildSquareGrid()
     {
-        Debug.Log("Building sqwuare grid");
         for (int z = 0; z < WorldSize; z++)
         {
             for (int y = -z / 2; y < WorldSize - (z / 2); y++)

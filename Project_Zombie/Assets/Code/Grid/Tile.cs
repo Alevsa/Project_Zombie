@@ -8,10 +8,9 @@ public class Tile : MonoBehaviour
     public string Description = "A short description of the tile";
 
 
-    // Feel free to delete these as apprpriate for the movement/pathfinding
+// Feel free to delete these as apprpriate for the movement/pathfinding
     public int MovementPenalty = 0;
     public List<Tile> Neighbours;
-//    public List<Unit> Occupants;
     public LayerMask TileLayer = 7;
 
 // All related to grid generation
@@ -22,24 +21,12 @@ public class Tile : MonoBehaviour
     public void Init()
     {
         Debug.Log("Starting Tile");
-//        Occupants = new List<Unit>();
-//        SimpleOccupantGrab();
         Neighbours = new List<Tile>();
     }
-/*
-    void SimpleOccupantGrab()
-    {
-        Occupants = transform.GetComponentsInChildren<Unit>().ToList<Unit>();
-    }
 
-    public void Enter(Unit aUnit)
+    // Will have stuff like textures and stuff in later
+    public void SetAppearance()
     {
-        Occupants.Add(aUnit);
+        transform.position = new Vector3(transform.position.x, transform.position.y, Elevation);
     }
-
-    public void Leave(Unit aUnit)
-    {
-        Occupants.Remove(aUnit);
-    }
-    */
 }
