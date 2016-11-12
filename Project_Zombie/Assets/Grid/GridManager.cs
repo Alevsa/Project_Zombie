@@ -9,11 +9,13 @@ using System.Collections.Generic;
 /// Some details I think are important, X + Y + Z = 0 on all tiles. 
 /// Z is the vertical plane while X&Y represent the horizontal plane, we use both X and Y
 /// 
-public class GridGenerator : MonoBehaviour {
+public class GridManager : Singleton<GridManager> {
 
     public Tile BaseTile;
     public int WorldSize = 2;
-    Dictionary<int[], Tile> World;
+
+    private bool worldCreated = false;
+    private Dictionary<int[], Tile> World;
 
     // These affect the building of a disc shaped grid. (Smoothing isn't a big deal with small grids but I'm leaving it in regardless)
     public int SmoothingFactor = 4;
@@ -24,9 +26,17 @@ public class GridGenerator : MonoBehaviour {
         CreateWorld();
     }
 
+    public Dictionary<int[], Tile> GetWorld()
+    {
+        if (worldCreated)
+            return World;
+
+        return null;
+    }
+
     private void Init()
     {
-        if (World != null)
+        if (World != null)                                          
         {
             DestroyWorld();
         }
@@ -78,6 +88,9 @@ public class GridGenerator : MonoBehaviour {
             while (aSequence[i].MoveNext())
                 yield return aSequence[i].Current;
         }
+
+        worldCreated = true;
+        worldCreated = true;
     }
 
     private IEnumerator SetWorldNeighbours()
