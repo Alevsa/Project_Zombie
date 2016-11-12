@@ -6,7 +6,7 @@ using System;
 public class GridEditorUIController : MonoBehaviour
 {
     public Text ModeText;
-    public Text WorldSizeText;
+    public InputField WorldSizeText;
     public void CreateWorld()
     {
         Debug.Log(WorldSizeText.text);
@@ -16,9 +16,24 @@ public class GridEditorUIController : MonoBehaviour
 
     public void SaveWorld()
     {
+        Debug.Log("Saving World (Unimplemented)");
     }
 
     public void LoadWorld()
     {
+        Debug.Log("Loading World (Unimplemented)");
+    }
+
+    public void SetWorldSizeToDefault()
+    {
+        int output;
+        bool isInt = int.TryParse(WorldSizeText.text, out output);
+        if (isInt && output > 0)
+        {
+        }
+        else
+        {
+            WorldSizeText.text = "1";
+        }
     }
 }
