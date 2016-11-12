@@ -15,19 +15,15 @@ public class Singleton<T> : MonoBehaviour
                 obj.AddComponent(typeof(T));               
                 m_instance = obj.GetComponent<T>();
                 obj.name = m_instance.GetType().Name;
-                Debug.Log("Auto creating singleton. Should you be doing this?!");
+                DontDestroyOnLoad(obj);
+                Debug.Log("Auto creating singleton " + m_instance + ". Should you be doing this?!", m_instance as GameObject);
             }
 
             return m_instance;
         }
-
-        private set
-        {
-            m_instance = value;
-        }
     }
     
-	void Start ()
+	void Awake()
     {
         if (FindObjectsOfType(typeof(T)).Length > 1)
         {
@@ -36,7 +32,7 @@ public class Singleton<T> : MonoBehaviour
         }
         else
         {
-            instance = GetComponent<T>();
+            m_instance = GetComponent<T>();
             Debug.Log("Creating singleton of type " + m_instance, gameObject);
             DontDestroyOnLoad(gameObject);
         }
