@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseTile: {fileID: 114000013035000400, guid: 1f9b7006ac1830442a25104c45b48211, type: 2}
-  WorldSize: 5
+  WorldSize: 10
   SmoothingFactor: 4
   SmoothingModifier: 4
 --- !u!4 &770962500
