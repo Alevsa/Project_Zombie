@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class GridEditorUIController : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class GridEditorUIController : MonoBehaviour
     {
         Debug.Log(WorldSizeText.text);
         GridManager.instance.WorldSize = int.Parse(WorldSizeText.text);
-        GridManager.instance.CreateWorld(ModeText.text);
+        GridManager.instance.CreateWorld((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), ModeText.text));
     }
 
     public void SaveWorld()

@@ -9,7 +9,17 @@ using System.Collections.Generic;
 /// Some details I think are important, X + Y + Z = 0 on all tiles. 
 /// Z is the vertical plane while X&Y represent the horizontal plane, we use both X and Y
 /// 
-public class GridManager : Singleton<GridManager> {
+public class GridManager : Singleton<GridManager>
+{
+    public enum GridType
+    {
+        Square,
+        Disc,
+        Diamond,
+        Cylinder,
+        Rectangle,
+        Star,
+    }
 
     public Tile BaseTile;
     public int WorldSize = 2;
@@ -38,12 +48,12 @@ public class GridManager : Singleton<GridManager> {
     }
 
 
-    public void CreateWorld(string aType)
+    public void CreateWorld(GridType type)
     {
         Init();
         StartCoroutine(Sequence
         (
-             CreateGridOfType(aType)
+             CreateGridOfType(type)
            , InitialiseTiles()      // <- this must be called before setting neighbours cause the neighbours list needs to be newed
            , SetWorldNeighbours()
         ));
@@ -59,7 +69,8 @@ public class GridManager : Singleton<GridManager> {
     }
 
     private void DestroyWorld()
-    { 
+    {
+        worldCreated = false;
         foreach (Tile tile in World.Values)
         {
             Destroy(tile.gameObject);
@@ -75,7 +86,6 @@ public class GridManager : Singleton<GridManager> {
                 yield return aSequence[i].Current;
         }
 
-        worldCreated = true;
         worldCreated = true;
     }
 
@@ -117,27 +127,26 @@ public class GridManager : Singleton<GridManager> {
         yield return null;
     }
 
-    // PROLY NOT THE PROPER C# WAY OF DOING IT LOL BUT W/E (advice welcome)
-    private IEnumerator CreateGridOfType(string aType)
+    private IEnumerator CreateGridOfType(GridType type)
     {
-        switch (aType)
+        switch (type)
         {
-            case "Disc":
+            case GridType.Disc:
                 BuildDiscworld();
                 break;
-            case "Diamond":
+            case GridType.Diamond:
                 BuildDiamondWorld();
                 break;
-            case "Star":
+            case GridType.Star:
                 BuildStarworld();      // <- Only starts to look like a star at larger scales
                 break;
-            case "Cylinder":
+            case GridType.Cylinder:
                 BuildCylinderWorld();  // <- rectangular shape which wraps around on the left and right edges
                 break;
-            case "Square":
+            case GridType.Square:
                 BuildSquareGrid();
                 break;
-            case "Rectangle":
+            case GridType.Rectangle:
                 BuildRectangleGrid();
                 break;
             default:

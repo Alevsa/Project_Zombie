@@ -16,7 +16,7 @@ public class Pathfinding : MonoBehaviour
             Path = path;
             Target = target;
             NextTile = null;
-            CurrentPosition = 0;
+            CurrentPosition = path.Count-1;
         }
     }
 
@@ -27,12 +27,20 @@ public class Pathfinding : MonoBehaviour
         Debug.Log("moving to target");
         if (m_movingUnits.ContainsKey(moving))
         {
+            Debug.Log("DICTIONARY CONTAINS ");
             if (m_movingUnits[moving].Target.Tile != target.Tile)
+            {
+                Debug.Log("CREATING A NEW PATH!");
                 m_movingUnits[moving] = new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target);
+            }
         }
         else
             m_movingUnits.Add(moving, new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target));
 
+        foreach(var p in m_movingUnits[moving].Path)
+        {
+            p.GetFromNode.Node.gameObject.GetComponent<Renderer>().material.color = Color.red;
+        }
         Move(moving, m_movingUnits[moving]);
         Debug.Log("MOVING UNIT LENGTH: " + m_movingUnits.Count);
     }
@@ -47,9 +55,9 @@ public class Pathfinding : MonoBehaviour
         Debug.Log("PATH LENGTH: " + pathInfo.Path.Count);
         if (pathInfo.Path.Count > 0)
         {
-            pathInfo.CurrentPosition = pathInfo.Path.Count-1;
             pathInfo.NextTile = pathInfo.Path[pathInfo.CurrentPosition].GetToNode.Node;
             Debug.Log("NEXT TILE: " + pathInfo.NextTile, pathInfo.NextTile);
+            Debug.Log("current position - " + pathInfo.CurrentPosition);
             if (pathInfo.NextTile != pathInfo.Target.Tile)
             {
                 Debug.Log("MOVING UNIT: " + moving.Unit, moving.Unit);
