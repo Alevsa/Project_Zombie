@@ -59,7 +59,7 @@ public class UnitStats : MonoBehaviour, IKillable , IActive , IMovable{
 
    public void PushToController()
     {
-        TurnOrderControl.instance.AddUnit(gameObject);
+        TurnOrderController.instance.AddUnit(gameObject);
     }
     #endregion
 

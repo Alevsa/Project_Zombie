@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class TurnOrderControl : Singleton<TurnOrderControl> {
+public class TurnOrderController : Singleton<TurnOrderController> {
 
     private Dictionary<GameObject, int> unitList;
 
@@ -29,6 +29,12 @@ public class TurnOrderControl : Singleton<TurnOrderControl> {
             unitList.Remove(entity);
     }
 
+    public void AdvanceTurn()
+    {
+        foreach (GameObject key in unitList.Keys)
+            unitList[key] += key.GetComponent<IActive>().initiative;
+    }
+
     public GameObject CalculateTurn()
     {
         //Advance unit's turn by initiative
@@ -37,6 +43,7 @@ public class TurnOrderControl : Singleton<TurnOrderControl> {
 
         //Return unit whose turn it is to act
         return unitList.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
+
     }
     
 }
