@@ -29,21 +29,22 @@ public class TurnOrderController : Singleton<TurnOrderController> {
             unitList.Remove(entity);
     }
 
+    //Advance to the next turn
     public void AdvanceTurn()
     {
         foreach (GameObject key in unitList.Keys)
             unitList[key] += key.GetComponent<IActive>().initiative;
     }
 
+    //Return unit whose turn it is to act
     public GameObject CalculateTurn()
     {
-        //Advance unit's turn by initiative
-        foreach (GameObject key in unitList.Keys)
-            unitList[key]+=key.GetComponent<IActive>().initiative;
-
-        //Return unit whose turn it is to act
         return unitList.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
-
     }
     
+    //Call when unit takes an action
+    public void ActionTaken(GameObject entity)
+    {
+        unitList[entity] = entity.GetComponent<IActive>().initiative / 2;
+    }
 }
