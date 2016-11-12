@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class UnitStats : MonoBehaviour, IKillable , IActive , IMovable{
+public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
+
+    [Header("General Information")]
+
+    public string unitName;
+    public Sprite portrait;
 
     #region IKillable
     [Header("Health")]
