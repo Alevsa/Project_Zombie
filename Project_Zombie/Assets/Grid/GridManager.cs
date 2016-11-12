@@ -25,7 +25,7 @@ public class GridManager : Singleton<GridManager>
     public int WorldSize = 2;
 
     private bool worldCreated = false;
-    private Dictionary<int[], Tile> World;
+    public Dictionary<int[], Tile> World;
     // These affect the building of a disc shaped grid. (Smoothing isn't a big deal with small grids but I'm leaving it in regardless)
     public int SmoothingFactor = 4;
     public int SmoothingModifier = 4;
@@ -106,9 +106,9 @@ public class GridManager : Singleton<GridManager>
                             if (World.TryGetValue(
                             new int[]
                             {
-                                 tile.CubicCoordinates[0] + x
-                                ,tile.CubicCoordinates[1] + y
-                                ,tile.CubicCoordinates[2] + z
+                                 tile.HexDetails.x + x
+                                ,tile.HexDetails.y + y
+                                ,tile.HexDetails.z + z
                             }, out Output))
                             {
                                 if (Output != tile)
@@ -208,7 +208,9 @@ public class GridManager : Singleton<GridManager>
                                                         , Quaternion.identity
                                                         , transform);
                             World.Add(new int[] { x, y, z }, tile);
-                            tile.CubicCoordinates = new int[] { x, y, z };
+                            tile.HexDetails.x = x;
+                            tile.HexDetails.y = y;
+                            tile.HexDetails.z = z;
                         }
                     }
                 }
@@ -232,7 +234,9 @@ public class GridManager : Singleton<GridManager>
                                             , Quaternion.identity
                                             , transform);
                 World.Add(new int[] { x, y, z }, tile);
-                tile.CubicCoordinates = new int[] { x, y, z };
+                tile.HexDetails.x = x;
+                tile.HexDetails.y = y;
+                tile.HexDetails.z = z;
             }
         }
     }
@@ -278,7 +282,9 @@ public class GridManager : Singleton<GridManager>
                                                         , Quaternion.identity
                                                         , transform);
                             World.Add(new int[] { x, y, z }, tile);
-                            tile.CubicCoordinates = new int[] { x, y, z };
+                            tile.HexDetails.x = x;
+                            tile.HexDetails.y = y;
+                            tile.HexDetails.z = z;
                         }
                     }
                 }
@@ -302,7 +308,9 @@ public class GridManager : Singleton<GridManager>
                                             , Quaternion.identity
                                             , transform);
                 World.Add(new int[] { x, y, z }, tile);
-                tile.CubicCoordinates = new int[] { x, y, z };
+                tile.HexDetails.x = x;
+                tile.HexDetails.y = y;
+                tile.HexDetails.z = z;
             }
         }
         WrapIntoCylinder();
@@ -369,7 +377,9 @@ public class GridManager : Singleton<GridManager>
                                             , Quaternion.identity
                                             , transform);
                 World.Add(new int[] { x, y, z }, tile);
-                tile.CubicCoordinates = new int[] { x, y, z };
+                tile.HexDetails.x = x;
+                tile.HexDetails.y = y;
+                tile.HexDetails.z = z;
             }
         }
     }
@@ -388,9 +398,29 @@ public class GridManager : Singleton<GridManager>
                                             , Quaternion.identity
                                             , transform);
                 World.Add(new int[] { x, y, z }, tile);
-                tile.CubicCoordinates = new int[] { x, y, z };
+                tile.HexDetails.x = x;
+                tile.HexDetails.y = y;
+                tile.HexDetails.z = z;
             }
         }
+    }
+
+    public void LoadMap(HexInfo[] aHexInfo)
+    {
+        Init();
+        foreach (HexInfo info in aHexInfo)
+        {
+            Vector3 loc = new Vector3(info.x, info.y, info.z);
+            Vector3 worldLoc = HexSpaceToWorldSpace(loc);
+            Tile tile = (Tile)Instantiate(BaseTile
+                                            , worldLoc
+                                            , Quaternion.identity
+                                            , transform);
+            World.Add(new int[] { info.x, info.y, info.z }, tile);
+            tile.HexDetails = info;
+            tile.Init();
+        }
+        StartCoroutine("SetWorldNeighbours");
     }
 
     private Vector3 HexSpaceToWorldSpace(Vector3 aCoord)

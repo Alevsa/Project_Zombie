@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Xml.Serialization;
 
 public class GridEditorUIController : MonoBehaviour
 {
@@ -17,11 +22,25 @@ public class GridEditorUIController : MonoBehaviour
     public void SaveWorld()
     {
         Debug.Log("Saving World (Unimplemented)");
+        List<HexInfo> mapToSave = new List<HexInfo>();
+        foreach (Tile tile in GridManager.instance.World.Values)
+        {
+            mapToSave.Add(tile.HexDetails);
+        }
+        IFormatter formatter = new BinaryFormatter();
+        Stream stream = new FileStream("Test.map", FileMode.Create, FileAccess.Write, FileShare.None);
+        formatter.Serialize(stream, mapToSave.ToArray());
+        stream.Close();
     }
 
     public void LoadWorld()
     {
         Debug.Log("Loading World (Unimplemented)");
+        IFormatter formatter = new BinaryFormatter();
+        Stream stream = new FileStream("Test.map", FileMode.Open, FileAccess.Read, FileShare.Read);
+        HexInfo[] loadedInfo = (HexInfo[])formatter.Deserialize(stream);
+        stream.Close();
+        GridManager.instance.LoadMap(loadedInfo);
     }
 
     public void SetWorldSizeToDefault()

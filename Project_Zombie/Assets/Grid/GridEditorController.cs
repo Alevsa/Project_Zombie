@@ -91,9 +91,9 @@ public class GridEditorController : MonoBehaviour
         if (obj != null)
         {
             Tile clickedTile = obj.GetComponent<Tile>();
-            clickedTile.Elevation++;
-            if (clickedTile.Elevation > MaxElevation)
-                clickedTile.Elevation = 0;
+            clickedTile.HexDetails.Elevation++;
+            if (clickedTile.HexDetails.Elevation > MaxElevation)
+                clickedTile.HexDetails.Elevation = 0;
             clickedTile.SetAppearance();
         }
     }
