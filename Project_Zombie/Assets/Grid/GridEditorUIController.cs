@@ -2,16 +2,16 @@
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using System.Xml.Serialization;
 
 public class GridEditorUIController : MonoBehaviour
 {
     public Text ModeText;
     public InputField WorldSizeText;
+    public GridEditorController GridEditorController;
+
     public void CreateWorld()
     {
         Debug.Log(WorldSizeText.text);
