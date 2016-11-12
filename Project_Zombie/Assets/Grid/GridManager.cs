@@ -87,6 +87,7 @@ public class GridManager : Singleton<GridManager>
         }
 
         worldCreated = true;
+        Debug.Log("Number of tiles created: " + World.Count, gameObject);
     }
 
     private IEnumerator SetWorldNeighbours()

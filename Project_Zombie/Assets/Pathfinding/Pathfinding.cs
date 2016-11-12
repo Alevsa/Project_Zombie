@@ -4,35 +4,14 @@ using System.Collections;
 
 public class Pathfinding : MonoBehaviour 
 {
-    private struct PathInformation
-    {
-        public List<Connection> Path;
-        public UnitInformation Target;
-        public Tile NextTile;
-        public int CurrentPosition;
-
-        public PathInformation(List<Connection> path, UnitInformation target)
-        {
-            Path = path;
-            Target = target;
-            NextTile = null;
-            CurrentPosition = path.Count-1;
-        }
-    }
-
     private Dictionary<UnitInformation, PathInformation> m_movingUnits = new Dictionary<UnitInformation, PathInformation>();
 
     public void MoveToTarget(UnitInformation moving, UnitInformation target)
     {
-        Debug.Log("moving to target");
         if (m_movingUnits.ContainsKey(moving))
         {
-            Debug.Log("DICTIONARY CONTAINS ");
             if (m_movingUnits[moving].Target.Tile != target.Tile)
-            {
-                Debug.Log("CREATING A NEW PATH!");
                 m_movingUnits[moving] = new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target);
-            }
         }
         else
             m_movingUnits.Add(moving, new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target));
@@ -42,7 +21,6 @@ public class Pathfinding : MonoBehaviour
             p.GetFromNode.Node.gameObject.GetComponent<Renderer>().material.color = Color.red;
         }
         Move(moving, m_movingUnits[moving]);
-        Debug.Log("MOVING UNIT LENGTH: " + m_movingUnits.Count);
     }
 
     public void Clear()
@@ -52,18 +30,14 @@ public class Pathfinding : MonoBehaviour
 
     private void Move(UnitInformation moving, PathInformation pathInfo)
     {
-        Debug.Log("PATH LENGTH: " + pathInfo.Path.Count);
         if (pathInfo.Path.Count > 0)
         {
             pathInfo.NextTile = pathInfo.Path[pathInfo.CurrentPosition].GetToNode.Node;
-            Debug.Log("NEXT TILE: " + pathInfo.NextTile, pathInfo.NextTile);
-            Debug.Log("current position - " + pathInfo.CurrentPosition);
             if (pathInfo.NextTile != pathInfo.Target.Tile)
             {
-                Debug.Log("MOVING UNIT: " + moving.Unit, moving.Unit);
                 moving.Unit.transform.position = pathInfo.NextTile.transform.position;
                 moving.Tile = pathInfo.NextTile;
-                pathInfo.CurrentPosition--;              
+                pathInfo.CurrentPosition--;
             }
         }
     }

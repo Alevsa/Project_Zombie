@@ -20,7 +20,6 @@ public class Tile : MonoBehaviour
 
     public void Init()
     {
-        Debug.Log("Starting Tile");
         Neighbours = new List<Tile>();
     }
 
