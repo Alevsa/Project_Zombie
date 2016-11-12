@@ -16,15 +16,9 @@ public class GridManager : Singleton<GridManager> {
 
     private bool worldCreated = false;
     private Dictionary<int[], Tile> World;
-
     // These affect the building of a disc shaped grid. (Smoothing isn't a big deal with small grids but I'm leaving it in regardless)
     public int SmoothingFactor = 4;
     public int SmoothingModifier = 4;
-
-    void Start()
-    {
-        CreateWorld();
-    }
 
     public Dictionary<int[], Tile> GetWorld()
     {
@@ -44,21 +38,13 @@ public class GridManager : Singleton<GridManager> {
     }
 
 
-    public void CreateWorld()
+    public void CreateWorld(string aType)
     {
         Init();
-        // These were done as Ienumerators rather than methods because at the scale I was originally generating
-        // maps it was interesting to watch it happen rather than sitting there for 30 seconds while it worked.
         StartCoroutine(Sequence
         (
-            // TO DO MAKE THESE TOGGLEABLE IN INTERFACE SOMEWHERE
-            //  BuildDiscworld()
-            //  BuildDiamondWorld()
-            //  BuildStarworld()      // <- Only starts to look like a star at larger scales
-            //  BuildCylinderWorld()  // <- rectangular shape which wraps around on the left and right edges
-             BuildSquareGrid()
-            // BuildRectangleGrid()
-           , InitialiseTiles()      // <- this must be called before setting neighbours
+             CreateGridOfType(aType)
+           , InitialiseTiles()      // <- this must be called before setting neighbours cause the neighbours list needs to be newed
            , SetWorldNeighbours()
         ));
     }
@@ -131,7 +117,37 @@ public class GridManager : Singleton<GridManager> {
         yield return null;
     }
 
-    private IEnumerator BuildDiscworld()
+    // PROLY NOT THE PROPER C# WAY OF DOING IT LOL BUT W/E (advice welcome)
+    private IEnumerator CreateGridOfType(string aType)
+    {
+        switch (aType)
+        {
+            case "Disc":
+                BuildDiscworld();
+                break;
+            case "Diamond":
+                BuildDiamondWorld();
+                break;
+            case "Star":
+                BuildStarworld();      // <- Only starts to look like a star at larger scales
+                break;
+            case "Cylinder":
+                BuildCylinderWorld();  // <- rectangular shape which wraps around on the left and right edges
+                break;
+            case "Square":
+                BuildSquareGrid();
+                break;
+            case "Rectangle":
+                BuildRectangleGrid();
+                break;
+            default:
+                Debug.Log("Didn't get a proper world type for creation");
+                break;
+        }
+        yield return null;
+    }
+
+    private void BuildDiscworld()
     {
         for (int x = -WorldSize - (WorldSize/2); x < WorldSize + (WorldSize / 2); x++)
         {
@@ -188,10 +204,9 @@ public class GridManager : Singleton<GridManager> {
                 }
             }
         }
-        yield return null;
     }
 
-    private IEnumerator BuildDiamondWorld()
+    private void BuildDiamondWorld()
     {
         for (int x = -WorldSize; x < WorldSize; x++)
         {
@@ -210,10 +225,9 @@ public class GridManager : Singleton<GridManager> {
                 tile.CubicCoordinates = new int[] { x, y, z };
             }
         }
-        yield return null;
     }
 
-    private IEnumerator BuildStarworld()
+    private void BuildStarworld()
     {
         for (int x = -WorldSize - WorldSize / 2; x < WorldSize + WorldSize / 2; x++)
         {
@@ -260,10 +274,9 @@ public class GridManager : Singleton<GridManager> {
                 }
             }
         }
-        yield return null;
     }
     // at z > 0 the tiles are shifted to the left by one
-    private IEnumerator BuildCylinderWorld()
+    private void BuildCylinderWorld()
     {
         for (int z = 0; z < WorldSize; z++)
         {
@@ -282,7 +295,6 @@ public class GridManager : Singleton<GridManager> {
                 tile.CubicCoordinates = new int[] { x, y, z };
             }
         }
-        yield return null;
         WrapIntoCylinder();
     }
 
@@ -333,7 +345,7 @@ public class GridManager : Singleton<GridManager> {
         }
     }
 
-    private IEnumerator BuildSquareGrid()
+    private void BuildSquareGrid()
     {
         for (int z = 0; z < WorldSize; z++)
         {
@@ -350,10 +362,9 @@ public class GridManager : Singleton<GridManager> {
                 tile.CubicCoordinates = new int[] { x, y, z };
             }
         }
-        yield return null;
     }
 
-    private IEnumerator BuildRectangleGrid()
+    private void BuildRectangleGrid()
     {
         for (int z = 0; z < WorldSize; z++)
         {
@@ -370,7 +381,6 @@ public class GridManager : Singleton<GridManager> {
                 tile.CubicCoordinates = new int[] { x, y, z };
             }
         }
-        yield return null;
     }
 
     private Vector3 HexSpaceToWorldSpace(Vector3 aCoord)
