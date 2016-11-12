@@ -56,6 +56,11 @@ public class UnitStats : MonoBehaviour, IKillable , IActive , IMovable{
             _initiative = value;
         }
     }
+
+   public void PushToController()
+    {
+        TurnOrderControl.instance.AddUnit(gameObject);
+    }
     #endregion
 
     #region IMovable
@@ -89,4 +94,9 @@ public class UnitStats : MonoBehaviour, IKillable , IActive , IMovable{
         }
     }
     #endregion
+
+    void Awake()
+    {
+        PushToController();
+    }
 }
