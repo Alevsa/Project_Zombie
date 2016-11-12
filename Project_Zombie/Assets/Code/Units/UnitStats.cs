@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Unit : MonoBehaviour, IKillable , IActive , IMovable{
+public class UnitStats : MonoBehaviour, IKillable , IActive , IMovable{
 
     #region IKillable
-    private int _health;
+    [Header("Health")]
+    public int _health;
     private int _state;
 
     public int health
@@ -33,15 +34,15 @@ public class Unit : MonoBehaviour, IKillable , IActive , IMovable{
         }
     }
 
-    public void Die()
+    public virtual void Die()
     {
-
+        state = 0;
     }
     #endregion
 
     #region IActive
-
-    private int _initiative;
+    [Header("Turn Order")]
+    public int _initiative;
 
     public int initiative
     {
@@ -58,7 +59,9 @@ public class Unit : MonoBehaviour, IKillable , IActive , IMovable{
     #endregion
 
     #region IMovable
-    private int _distance;
+    [Header("Movement")]
+    public int _distance;
+    public bool _ignoreObstacles;
 
     public int distance
     {
@@ -73,9 +76,17 @@ public class Unit : MonoBehaviour, IKillable , IActive , IMovable{
         }
     }
 
-    public void Move()
+    public bool ignoreObstacles
     {
+        get
+        {
+            return _ignoreObstacles;
+        }
 
+        set
+        {
+            _ignoreObstacles = value;
+        }
     }
     #endregion
 }

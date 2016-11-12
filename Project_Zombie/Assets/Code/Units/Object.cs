@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Object : MonoBehaviour, IKillable {
+public abstract class Object : MonoBehaviour, IKillable {
 
     #region IKillable
-    private int _health;
+    public int _health;
     private int _state;
 
     public int health

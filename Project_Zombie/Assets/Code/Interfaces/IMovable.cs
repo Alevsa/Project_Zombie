@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-interface IMovable  {
+interface IMovable {
 
     int distance { get; set; }
 
-    void Move();
+    bool ignoreObstacles { get; set; }
+
 }
