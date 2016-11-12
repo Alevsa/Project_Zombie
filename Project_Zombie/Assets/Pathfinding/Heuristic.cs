@@ -13,6 +13,7 @@ public class Heuristic
 	//euclidean distance used as the cost value estimate.
 	public float Estimate(Tile node)
 	{
-		return Vector3.Distance (node.transform.position, node.transform.position);
+        
+		return Vector3.Distance (m_GoalNode.transform.position, node.transform.position);
 	}
 }
