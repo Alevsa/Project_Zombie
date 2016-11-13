@@ -8,4 +8,5 @@ public struct HexInfo
     public int z;
     public int Elevation;
     public bool DeploymentTile;
+    public int Model;
 };
