@@ -23,6 +23,6 @@ public class Tile : MonoBehaviour
     // Will have stuff like textures and stuff in later
     public void SetAppearance()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y, HexDetails.Elevation);
+        transform.position = new Vector3(transform.position.x, transform.position.y, -HexDetails.Elevation);
     }
 }

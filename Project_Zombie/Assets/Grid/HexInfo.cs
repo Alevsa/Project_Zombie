@@ -7,4 +7,5 @@ public struct HexInfo
     public int y;
     public int z;
     public int Elevation;
+    public bool DeploymentTile;
 };
