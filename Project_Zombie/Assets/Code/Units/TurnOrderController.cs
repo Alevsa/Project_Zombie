@@ -5,38 +5,46 @@ using System.Linq;
 
 public class TurnOrderController : Singleton<TurnOrderController> {
 
-    private Dictionary<GameObject, int> unitList;
+    private Dictionary<GameObject, int> mainUnitList;
     public List<GameObject> turnOrderList;
 
 	// Use this for initialization
 	void Start () {
-        unitList = new Dictionary<GameObject, int>();
+        mainUnitList = new Dictionary<GameObject, int>();
         turnOrderList = new List<GameObject>();
 
+        GameObject[] units = GameObject.FindGameObjectsWithTag("Unit");
 
+        foreach (GameObject unit in units)
+            AddUnit(unit);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    
 	}
 
     public void AddUnit(GameObject entity)
     {
-        if (!unitList.ContainsKey(entity))
-            unitList.Add(entity, 0);
+        if (mainUnitList == null)
+            return;
+
+        if (!mainUnitList.ContainsKey(entity))
+            mainUnitList.Add(entity, entity.GetComponent<IActive>().initiative);
     }
 
     public void RemoveUnit(GameObject entity)
     {
-        if (unitList.ContainsKey(entity))
-            unitList.Remove(entity);
+        if (mainUnitList.ContainsKey(entity))
+            mainUnitList.Remove(entity);
     }
 
     //Advance to the next turn
     public void AdvanceTurn(Dictionary<GameObject, int> unitList)
     {
-        foreach (GameObject key in unitList.Keys)
+        List<GameObject> keys = new List<GameObject>(unitList.Keys);
+
+        foreach (GameObject key in keys)
             unitList[key] += key.GetComponent<IActive>().initiative;
     }
 
@@ -55,15 +63,19 @@ public class TurnOrderController : Singleton<TurnOrderController> {
     //Get the turn order for the amountOfTurns turns
     public void GetTurnOrder (int amountOfTurns)
     {
-        if (unitList.Count == 0)
+        if (mainUnitList == null || mainUnitList.Count == 0)
             return;
 
-        Dictionary<GameObject, int> calcUnitList = new Dictionary<GameObject, int>(unitList);
+        Dictionary<GameObject, int> calcUnitList = new Dictionary<GameObject, int>(mainUnitList);
 
         for (int i = 0; i < amountOfTurns; i++)
         {
             GameObject entity = CalculateTurn(calcUnitList);
-            turnOrderList[i] = entity;
+
+            if (turnOrderList.Count == amountOfTurns)
+                turnOrderList.RemoveAt(i);
+
+            turnOrderList.Insert(i, entity);
             ActionTaken(calcUnitList, entity);
             AdvanceTurn(calcUnitList);
         }

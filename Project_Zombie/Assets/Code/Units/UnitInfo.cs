@@ -100,7 +100,7 @@ public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
     }
     #endregion
 
-    void Awake()
+    void Start()
     {
         PushToController();
     }
