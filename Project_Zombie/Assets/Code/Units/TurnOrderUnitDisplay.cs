@@ -16,7 +16,6 @@ public class TurnOrderUnitDisplay : MonoBehaviour {
 	void OnGUI () {
         if (TurnOrderController.instance.turnOrderList.Count > (ImageNumber - 1))
         {
-            Debug.Log(TurnOrderController.instance.turnOrderList.Count);
             image.sprite = TurnOrderController.instance.turnOrderList[ImageNumber - 1].GetComponent<UnitInfo>().portrait;
         }
 	}

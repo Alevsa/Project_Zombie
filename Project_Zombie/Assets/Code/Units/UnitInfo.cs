@@ -70,6 +70,7 @@ public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
 
     #region IMovable
     [Header("Movement")]
+    public Tile _tile;
     public int _distance;
     public bool _ignoreObstacles;
 
@@ -96,6 +97,19 @@ public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
         set
         {
             _ignoreObstacles = value;
+        }
+    }
+
+    public Tile tile
+    {
+        get
+        {
+            return _tile;
+        }
+
+        set
+        {
+            _tile = value;
         }
     }
     #endregion
