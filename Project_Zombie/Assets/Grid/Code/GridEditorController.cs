@@ -15,6 +15,9 @@ public class GridEditorController : MonoBehaviour
 //    public InputField DescriptionText;
     public Toggle DeployableToggle;
     public GameObject SelectionPanel;
+    public Text TileTypeModeText;
+    public Text TileDoodadModeText;
+
     public void CreateWorld()
     {
         GridManager.instance.WorldSize = int.Parse(GridSizeText.text);
