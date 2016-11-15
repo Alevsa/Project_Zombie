@@ -18,8 +18,10 @@ public class Pathfinding : MonoBehaviour
 
         foreach(var p in m_movingUnits[moving].Path)
         {
-            p.GetFromNode.Node.gameObject.GetComponent<Renderer>().material.color = Color.red;
+            p.GetFromNode.Node.SetActiveHexagon(p.GetFromNode.Node.transform.GetChild(0).gameObject);
+            p.GetFromNode.Node.SetSelectable(true, false);
         }
+        
         Move(moving, m_movingUnits[moving]);
     }
 
@@ -35,11 +37,22 @@ public class Pathfinding : MonoBehaviour
             pathInfo.NextTile = pathInfo.Path[pathInfo.CurrentPosition].GetToNode.Node;
             if (pathInfo.NextTile != pathInfo.Target.Tile)
             {
-                moving.Unit.transform.position = pathInfo.NextTile.transform.position;
-
+                StartCoroutine(MoveOverTime(moving.Unit.transform, pathInfo.NextTile.transform.position + moving.Offset));
                 moving.Tile = pathInfo.NextTile;
                 pathInfo.CurrentPosition--;
             }
+        }
+    }
+
+    private IEnumerator MoveOverTime(Transform moving, Vector3 target)
+    {
+        float moveTime = 0;
+
+        while (moveTime <= 2f)
+        {
+            moving.position = Vector3.Lerp(moving.position, target, moveTime);
+            moveTime += Time.deltaTime;
+            yield return null;
         }
     }
 

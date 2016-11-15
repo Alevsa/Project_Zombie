@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ed9712eb57d3b439dff01f4fb24bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BaseTile: {fileID: 0}
-  WorldSize: 10
+  BaseTile: {fileID: 114000012867011258, guid: 21d4df032e23a91499d843d398655283, type: 2}
+  GridSize: 10
   SmoothingFactor: 4
   SmoothingModifier: 4

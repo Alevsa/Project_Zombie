@@ -72,7 +72,7 @@ public class BattleManager : Singleton<BattleManager>
     public void AddUnit(UnitInformation unit)
     {
         Units.Add(unit);
-        unit.Unit.transform.position = unit.Tile.transform.position;
+        unit.Unit.transform.position = unit.Tile.transform.position + unit.Offset;
     }
 
     public void AddUnits(List<UnitInformation> units)

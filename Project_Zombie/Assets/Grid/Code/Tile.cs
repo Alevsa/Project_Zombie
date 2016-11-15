@@ -18,7 +18,7 @@ public class Tile : MonoBehaviour
 
     private GameObject m_activeHexagon;
     private Material m_activeHexMat;
-    private Color m_selectedColor = Color.cyan;
+    private Color m_selectedColor = Color.magenta;
     private string m_materialProperty = "_EmissionColor";
     private float m_flashRate = 5f;
 
@@ -72,10 +72,10 @@ public class Tile : MonoBehaviour
     public void SetActiveHexagon(GameObject activeHexagon)
     {
         m_activeHexagon = activeHexagon;
-        m_activeHexMat = activeHexagon.GetComponent<Renderer>().sharedMaterials[0];
+        m_activeHexMat = activeHexagon.GetComponent<Renderer>().materials[0];
     }
 
-    private void SetSelectable(bool selectable, bool flash=false)
+    public void SetSelectable(bool selectable, bool flash=false)
     {
         if (m_activeHexagon == null)
             return;
