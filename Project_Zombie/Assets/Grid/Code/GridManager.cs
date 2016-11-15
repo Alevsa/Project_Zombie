@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 /// 
 /// http://www.redblobgames.com/grids/hexagons/ is the main resource I used to get hte geometry right. We're using cubic coordinated from 
@@ -22,60 +23,49 @@ public class GridManager : Singleton<GridManager>
     }
 
     public Tile BaseTile;
-    public int WorldSize = 2;
+    public int GridSize = 2;
 
-    private bool worldCreated = false;
-    public Dictionary<int[], Tile> World;
+    public Dictionary<int[], Tile> Grid;
     // These affect the building of a disc shaped grid. (Smoothing isn't a big deal with small grids but I'm leaving it in regardless)
     public int SmoothingFactor = 4;
     public int SmoothingModifier = 4;
 
-    public Dictionary<int[], Tile> GetWorld()
-    {
-        if (worldCreated)
-            return World;
-
-        return null;
-    }
-
     private void Init()
     {
-        if (World != null)                                          
+        if (Grid != null)
         {
-            DestroyWorld();
+            DestroyGrid();
         }
-        World = new Dictionary<int[], Tile>(new EqualityComparer());
+        Grid = new Dictionary<int[], Tile>(new EqualityComparer());
     }
 
-
-    public void CreateWorld(GridType type)
+    public void CreateGrid(GridType type)
     {
         Init();
         StartCoroutine(Sequence
         (
              CreateGridOfType(type)
            , InitialiseTiles()      // <- this must be called before setting neighbours cause the neighbours list needs to be newed
-           , SetWorldNeighbours()
+           , SetGridNeighbours()
         ));
     }
 
     private IEnumerator InitialiseTiles()
     {
-        foreach (Tile tile in World.Values)
+        foreach (Tile tile in Grid.Values)
         {
             tile.Init();
         }
         yield return null;
     }
 
-    private void DestroyWorld()
+    private void DestroyGrid()
     {
-        worldCreated = false;
-        foreach (Tile tile in World.Values)
+        foreach (Tile tile in Grid.Values)
         {
             Destroy(tile.gameObject);
         }
-        World.Clear();
+        Grid.Clear();
     }
 
     private IEnumerator Sequence(params IEnumerator[] aSequence)
@@ -86,13 +76,13 @@ public class GridManager : Singleton<GridManager>
                 yield return aSequence[i].Current;
         }
 
-        worldCreated = true;
-        Debug.Log("Number of tiles created: " + World.Count, gameObject);
+        EventManager.Send<GridCreated>(this, new GridCreated(Grid));
+        Debug.Log("Number of tiles created: " + Grid.Count, gameObject);
     }
 
-    private IEnumerator SetWorldNeighbours()
+    private IEnumerator SetGridNeighbours()
     {
-        foreach (Tile tile in World.Values)
+        foreach (Tile tile in Grid.Values)
         {
             Tile Output;
             for (int x = -1; x <= 1; x++)
@@ -103,7 +93,7 @@ public class GridManager : Singleton<GridManager>
                     {
                         if (x + y + z == 0)
                         {
-                            if (World.TryGetValue(
+                            if (Grid.TryGetValue(
                             new int[]
                             {
                                  tile.HexDetails.x + x
@@ -133,16 +123,16 @@ public class GridManager : Singleton<GridManager>
         switch (type)
         {
             case GridType.Disc:
-                BuildDiscworld();
+                BuildDiscGrid();
                 break;
             case GridType.Diamond:
-                BuildDiamondWorld();
+                BuildDiamondGrid();
                 break;
             case GridType.Star:
-                BuildStarworld();      // <- Only starts to look like a star at larger scales
+                BuildStarGrid();      // <- Only starts to look like a star at larger scales
                 break;
             case GridType.Cylinder:
-                BuildCylinderWorld();  // <- rectangular shape which wraps around on the left and right edges
+                BuildCylinderGrid();  // <- rectangular shape which wraps around on the left and right edges
                 break;
             case GridType.Square:
                 BuildSquareGrid();
@@ -151,48 +141,48 @@ public class GridManager : Singleton<GridManager>
                 BuildRectangleGrid();
                 break;
             default:
-                Debug.Log("Didn't get a proper world type for creation");
+                Debug.Log("Didn't get a proper grid type for creation");
                 break;
         }
         yield return null;
     }
 
-    private void BuildDiscworld()
+    private void BuildDiscGrid()
     {
-        for (int x = -WorldSize - (WorldSize/2); x < WorldSize + (WorldSize / 2); x++)
+        for (int x = -GridSize - (GridSize/2); x < GridSize + (GridSize / 2); x++)
         {
-            for (int y = -WorldSize - (WorldSize / 2); y < WorldSize + (WorldSize / 2); y++)
+            for (int y = -GridSize - (GridSize / 2); y < GridSize + (GridSize / 2); y++)
             {
-                for (int z = -WorldSize - (WorldSize / 2); z < WorldSize + (WorldSize/2); z++)
+                for (int z = -GridSize - (GridSize / 2); z < GridSize + (GridSize/2); z++)
                 {
                     if (x + y + z == 0)
                     {
                        // Debug.Log("x " + x + " y " + y + " z " + z);
                         if (
                                 (   
-                                    (Mathf.Abs(z) > WorldSize) 
+                                    (Mathf.Abs(z) > GridSize) 
                                     && 
                                     (
-                                        ( Mathf.Abs(x) < ( -WorldSize/ SmoothingFactor + (SmoothingModifier * (Mathf.Abs(z) - WorldSize))) )
-                                        || ( Mathf.Abs(y) < (-WorldSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(z) - WorldSize))) )
+                                        ( Mathf.Abs(x) < ( -GridSize/ SmoothingFactor + (SmoothingModifier * (Mathf.Abs(z) - GridSize))) )
+                                        || ( Mathf.Abs(y) < (-GridSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(z) - GridSize))) )
                                     )
                                 )
                                 || 
                                 (
-                                    (Mathf.Abs(y) > WorldSize) 
+                                    (Mathf.Abs(y) > GridSize) 
                                     && 
                                     (
-                                        ( Mathf.Abs(x) < (-WorldSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(y) - WorldSize))) )
-                                        || ( Mathf.Abs(z) < (-WorldSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(y) - WorldSize))) )
+                                        ( Mathf.Abs(x) < (-GridSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(y) - GridSize))) )
+                                        || ( Mathf.Abs(z) < (-GridSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(y) - GridSize))) )
                                     )
                                 )
                                 || 
                                 (
-                                    (Mathf.Abs(x) > WorldSize) 
+                                    (Mathf.Abs(x) > GridSize) 
                                     &&
                                     (
-                                        ( Mathf.Abs(y) < (-WorldSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(x) - WorldSize))) )
-                                        || ( Mathf.Abs(z) < (-WorldSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(x) - WorldSize))) )
+                                        ( Mathf.Abs(y) < (-GridSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(x) - GridSize))) )
+                                        || ( Mathf.Abs(z) < (-GridSize / SmoothingFactor + (SmoothingModifier * (Mathf.Abs(x) - GridSize))) )
                                     )
                                 )
                             )
@@ -207,7 +197,7 @@ public class GridManager : Singleton<GridManager>
                                                         , worldLoc
                                                         , Quaternion.identity
                                                         , transform);
-                            World.Add(new int[] { x, y, z }, tile);
+                            Grid.Add(new int[] { x, y, z }, tile);
                             tile.HexDetails.x = x;
                             tile.HexDetails.y = y;
                             tile.HexDetails.z = z;
@@ -218,11 +208,11 @@ public class GridManager : Singleton<GridManager>
         }
     }
 
-    private void BuildDiamondWorld()
+    private void BuildDiamondGrid()
     {
-        for (int x = -WorldSize; x < WorldSize; x++)
+        for (int x = -GridSize; x < GridSize; x++)
         {
-            for (int y = -WorldSize; y < WorldSize; y++)
+            for (int y = -GridSize; y < GridSize; y++)
             {
                 // there's only a single value that can make the coordinates total zero
                 // so there's no reason to loop through x or to check if it's zero.
@@ -233,7 +223,7 @@ public class GridManager : Singleton<GridManager>
                                             , worldLoc
                                             , Quaternion.identity
                                             , transform);
-                World.Add(new int[] { x, y, z }, tile);
+                Grid.Add(new int[] { x, y, z }, tile);
                 tile.HexDetails.x = x;
                 tile.HexDetails.y = y;
                 tile.HexDetails.z = z;
@@ -241,33 +231,33 @@ public class GridManager : Singleton<GridManager>
         }
     }
 
-    private void BuildStarworld()
+    private void BuildStarGrid()
     {
-        for (int x = -WorldSize - WorldSize / 2; x < WorldSize + WorldSize / 2; x++)
+        for (int x = -GridSize - GridSize / 2; x < GridSize + GridSize / 2; x++)
         {
-            for (int y = -WorldSize - WorldSize / 2; y < WorldSize + WorldSize / 2; y++)
+            for (int y = -GridSize - GridSize / 2; y < GridSize + GridSize / 2; y++)
             {
-                for (int z = -WorldSize - WorldSize / 2; z < WorldSize + WorldSize / 2; z++)
+                for (int z = -GridSize - GridSize / 2; z < GridSize + GridSize / 2; z++)
                 {
                     if (x + y + z == 0)
                     {
                         if (
                                 (
-                                       (Mathf.Abs(z) > WorldSize)
-                                    && (Mathf.Abs(x) > (WorldSize / (Mathf.Abs(z) - WorldSize)))
-                                    && (Mathf.Abs(y) > (WorldSize / (Mathf.Abs(z) - WorldSize)))
+                                       (Mathf.Abs(z) > GridSize)
+                                    && (Mathf.Abs(x) > (GridSize / (Mathf.Abs(z) - GridSize)))
+                                    && (Mathf.Abs(y) > (GridSize / (Mathf.Abs(z) - GridSize)))
                                 )
                                 ||
                                 (
-                                        (Mathf.Abs(y) > WorldSize)
-                                    && (Mathf.Abs(x) > (WorldSize / (Mathf.Abs(y) - WorldSize)))
-                                    && (Mathf.Abs(z) > (WorldSize / (Mathf.Abs(y) - WorldSize)))
+                                        (Mathf.Abs(y) > GridSize)
+                                    && (Mathf.Abs(x) > (GridSize / (Mathf.Abs(y) - GridSize)))
+                                    && (Mathf.Abs(z) > (GridSize / (Mathf.Abs(y) - GridSize)))
                                 )
                                 ||
                                 (
-                                        (Mathf.Abs(x) > WorldSize)
-                                    && (Mathf.Abs(y) > (WorldSize / (Mathf.Abs(x) - WorldSize)))
-                                    && (Mathf.Abs(z) > (WorldSize / (Mathf.Abs(x) - WorldSize)))
+                                        (Mathf.Abs(x) > GridSize)
+                                    && (Mathf.Abs(y) > (GridSize / (Mathf.Abs(x) - GridSize)))
+                                    && (Mathf.Abs(z) > (GridSize / (Mathf.Abs(x) - GridSize)))
                                 )
                             )
                         {
@@ -281,7 +271,7 @@ public class GridManager : Singleton<GridManager>
                                                         , worldLoc
                                                         , Quaternion.identity
                                                         , transform);
-                            World.Add(new int[] { x, y, z }, tile);
+                            Grid.Add(new int[] { x, y, z }, tile);
                             tile.HexDetails.x = x;
                             tile.HexDetails.y = y;
                             tile.HexDetails.z = z;
@@ -292,13 +282,13 @@ public class GridManager : Singleton<GridManager>
         }
     }
     // at z > 0 the tiles are shifted to the left by one
-    private void BuildCylinderWorld()
+    private void BuildCylinderGrid()
     {
-        for (int z = 0; z < WorldSize; z++)
+        for (int z = 0; z < GridSize; z++)
         {
             // no idea why you have to do a float division here and round, probably some interesting reason but happy it's working for now.
             // Possible performance issue too (though not with small scale maps)
-            for (int y = -Mathf.FloorToInt(z/2f); y < WorldSize + WorldSize/2 - Mathf.FloorToInt(z/2f); y++)
+            for (int y = -Mathf.FloorToInt(z/2f); y < GridSize + GridSize/2 - Mathf.FloorToInt(z/2f); y++)
             {
                 int x = -(z + y);
                 Vector3 loc = new Vector3(x, y, z);
@@ -307,7 +297,7 @@ public class GridManager : Singleton<GridManager>
                                             , worldLoc
                                             , Quaternion.identity
                                             , transform);
-                World.Add(new int[] { x, y, z }, tile);
+                Grid.Add(new int[] { x, y, z }, tile);
                 tile.HexDetails.x = x;
                 tile.HexDetails.y = y;
                 tile.HexDetails.z = z;
@@ -320,20 +310,20 @@ public class GridManager : Singleton<GridManager>
     {
         Dictionary<int, Tile> leftEdge = new Dictionary<int, Tile>();
         Dictionary<int, Tile> rightEdge = new Dictionary<int, Tile>();
-        for (int z = 0; z < WorldSize; z++)
+        for (int z = 0; z < GridSize; z++)
         {
             int x = (-z / 2) - (z & 1);
             int y = -(z + x);
            // Debug.Log("LEFT EDGE: X " + x + " Y " + y + " Z " + z);
-            rightEdge.Add(z,World[new int[]
+            rightEdge.Add(z,Grid[new int[]
             {
                 x
             ,   y
             ,   z
             }]);
-            y = (WorldSize + WorldSize / 2 - Mathf.FloorToInt(z / 2f)) - 1;
+            y = (GridSize + GridSize / 2 - Mathf.FloorToInt(z / 2f)) - 1;
             x = -(z + y);
-            leftEdge.Add(z, World[new int[]
+            leftEdge.Add(z, Grid[new int[]
             {
                 x
             ,   y
@@ -342,7 +332,7 @@ public class GridManager : Singleton<GridManager>
           //  Debug.Log("RIGHT EDGE: X " + x + " Y " + y + " Z " + z);
         }
 
-        for (int z = 0; z < WorldSize; z++)
+        for (int z = 0; z < GridSize; z++)
         {
             leftEdge[z].Neighbours.Add(rightEdge[z]);
             rightEdge[z].Neighbours.Add(leftEdge[z]);
@@ -365,9 +355,9 @@ public class GridManager : Singleton<GridManager>
 
     private void BuildSquareGrid()
     {
-        for (int z = 0; z < WorldSize; z++)
+        for (int z = 0; z < GridSize; z++)
         {
-            for (int y = -z / 2; y < WorldSize - (z / 2); y++)
+            for (int y = -z / 2; y < GridSize - (z / 2); y++)
             {
                 int x = -(z + y);
                 Vector3 loc = new Vector3(x, y, z);
@@ -376,7 +366,7 @@ public class GridManager : Singleton<GridManager>
                                             , worldLoc
                                             , Quaternion.identity
                                             , transform);
-                World.Add(new int[] { x, y, z }, tile);
+                Grid.Add(new int[] { x, y, z }, tile);
                 tile.HexDetails.x = x;
                 tile.HexDetails.y = y;
                 tile.HexDetails.z = z;
@@ -386,9 +376,9 @@ public class GridManager : Singleton<GridManager>
 
     private void BuildRectangleGrid()
     {
-        for (int z = 0; z < WorldSize; z++)
+        for (int z = 0; z < GridSize; z++)
         {
-            for (int y = -z / 2; y < WorldSize + WorldSize / 2 - (z/2); y++)
+            for (int y = -z / 2; y < GridSize + GridSize / 2 - (z/2); y++)
             {
                 int x = -(z + y);
                 Vector3 loc = new Vector3(x, y, z);
@@ -397,7 +387,7 @@ public class GridManager : Singleton<GridManager>
                                             , worldLoc
                                             , Quaternion.identity
                                             , transform);
-                World.Add(new int[] { x, y, z }, tile);
+                Grid.Add(new int[] { x, y, z }, tile);
                 tile.HexDetails.x = x;
                 tile.HexDetails.y = y;
                 tile.HexDetails.z = z;
@@ -416,7 +406,7 @@ public class GridManager : Singleton<GridManager>
                                             , worldLoc
                                             , Quaternion.identity
                                             , transform);
-            World.Add(new int[] { info.x, info.y, info.z }, tile);
+            Grid.Add(new int[] { info.x, info.y, info.z }, tile);
             tile.HexDetails = info;
             tile.Init();
         }

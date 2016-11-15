@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
-public class testscript : MonoBehaviour {
+public class TurnOrderImageDisplay : MonoBehaviour {
+    public int ImageNumber;
 
 	// Use this for initialization
 	void Start () {
-        
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        TurnOrderController.instance.GetTurnOrder(4);
-    }
+	void OnGUI () {
+
+	}
 }

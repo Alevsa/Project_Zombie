@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿/*
+#region MyRegion
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class TurnOrderController : Singleton<TurnOrderController> {
+public class TurnOrderController : Singleton<TurnOrderController>
+{
 
     private Dictionary<GameObject, int> mainUnitList;
     public List<GameObject> turnOrderList;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         mainUnitList = new Dictionary<GameObject, int>();
         turnOrderList = new List<GameObject>();
 
@@ -17,12 +21,13 @@ public class TurnOrderController : Singleton<TurnOrderController> {
 
         foreach (GameObject unit in units)
             AddUnit(unit);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	    
-	}
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public void AddUnit(GameObject entity)
     {
@@ -53,7 +58,7 @@ public class TurnOrderController : Singleton<TurnOrderController> {
     {
         return unitList.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
     }
-    
+
     //Call when unit takes an action
     public void ActionTaken(Dictionary<GameObject, int> unitList, GameObject entity)
     {
@@ -61,7 +66,7 @@ public class TurnOrderController : Singleton<TurnOrderController> {
     }
 
     //Get the turn order for the amountOfTurns turns
-    public void GetTurnOrder (int amountOfTurns)
+    public void GetTurnOrder(int amountOfTurns)
     {
         if (mainUnitList == null || mainUnitList.Count == 0)
             return;
@@ -81,3 +86,6 @@ public class TurnOrderController : Singleton<TurnOrderController> {
         }
     }
 }
+
+#endregion
+*/
