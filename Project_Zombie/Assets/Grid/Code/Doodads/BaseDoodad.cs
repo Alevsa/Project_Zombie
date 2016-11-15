@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public class BaseDoodad : MonoBehaviour
+﻿[System.Serializable]
+public abstract class BaseDoodad
 {
     public bool Pathable;
     public int MovementCost;
-    public GameObject DoodadModel;
+    public int ModelId;
 }

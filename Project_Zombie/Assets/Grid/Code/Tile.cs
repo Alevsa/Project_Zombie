@@ -12,13 +12,16 @@ public class Tile : MonoBehaviour
     public bool EdgeTile;
     public bool Pathable = true;
     public int MovementCost = 100;
+    private GameObject mModel;
+    private MeshRenderer mMeshRenderer;
 
     public void Init()
     {
-       // HexDetails = new HexInfo();
         Neighbours = new List<Tile>();
- //       HexDetails.Name = "Placeholder name";
- //       HexDetails.Description = "Placeholder description";
+        if (HexDetails.Type == null)
+            HexDetails.Type = new DirtTileType();
+        if (HexDetails.Doodad == null )
+            HexDetails.Doodad = new EmptyDoodad();
         SetAppearance();
     }
 
@@ -26,12 +29,30 @@ public class Tile : MonoBehaviour
     public void SetAppearance()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, -HexDetails.Elevation);
+        foreach (Transform t in transform)
+        {
+            Debug.Log(HexDetails.Type.ModelId);
+            Debug.Log(t.name);
+            if (t.name == HexDetails.Type.ModelId)
+            {
+                t.gameObject.SetActive(true);
+                mModel = t.gameObject;
+            }
+            else
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
+        mMeshRenderer = mModel.GetComponent<MeshRenderer>();
+        mMeshRenderer.materials = new Material[] {
+             Resources.Load("3DModels/Materials/" + HexDetails.Type.CapTexture) as Material
+            ,Resources.Load("3DModels/Materials/" + HexDetails.Type.SideTexture) as Material
+        };
     }
 
     void CalculatePathingInfo()
     {
-        MovementCost = 100 + HexDetails.Doodad.MovementCost;
-        MovementCost = 100 + HexDetails.Type.MovementCost;
+        MovementCost += HexDetails.Doodad.MovementCost + HexDetails.Type.MovementCost;
         Pathable = HexDetails.Doodad.Pathable || HexDetails.Type.Pathable;
     }
 }

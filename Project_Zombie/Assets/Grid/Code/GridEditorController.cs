@@ -8,7 +8,7 @@ using System.IO;
 
 public class GridEditorController : MonoBehaviour
 {
-    public Text ModeText;
+    public Text CreateModeText;
     public InputField GridSizeText;
     public InputField ElevationText;
 //    public InputField NameText;
@@ -21,7 +21,7 @@ public class GridEditorController : MonoBehaviour
     public void CreateWorld()
     {
         GridManager.instance.WorldSize = int.Parse(GridSizeText.text);
-        GridManager.instance.CreateWorld((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), ModeText.text));
+        GridManager.instance.CreateWorld((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), CreateModeText.text));
     }
 
     public void SaveWorld()
@@ -91,16 +91,17 @@ public class GridEditorController : MonoBehaviour
         SelectionPanel.SetActive(true);
         DeployableToggle.isOn = SelectedTile.HexDetails.DeploymentTile;
     }
-/*
-    public void SetTileName()
+
+    void SetTypeMode()
     {
-        SelectedTile.HexDetails.Name = NameText.text;
+
     }
 
-    public void SetTileDescription()
+    void SetDoodadMode()
     {
+
     }
-*/
+
     public void SetTileAsDeployable()
     {
         SelectedTile.HexDetails.DeploymentTile = DeployableToggle.isOn;
@@ -122,7 +123,7 @@ public class GridEditorController : MonoBehaviour
     public int MinGridSize = 1;
     public Transform SelectionIndicator;
 
-    enum eMouseMode { Select, Elevation }
+    enum eMouseMode { Select ,Elevation ,TileType }
     eMouseMode ActiveMode;
 
     void Update()
@@ -169,10 +170,10 @@ public class GridEditorController : MonoBehaviour
             }
         }
 
-        Camera.main.transform.Translate(new Vector3(0, 0, Input.GetAxis("Mouse ScrollWheel") * ZoomSpeed * Time.deltaTime));
+        Camera.main.transform.Translate(new Vector3(0, 0, Input.GetAxis("Mouse ScrollWheel") * ZoomSpeed * Time.deltaTime), Space.World);
         if (Camera.main.transform.position.z > MaximumZoom)
             Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, MaximumZoom);
-        Camera.main.transform.Translate(translation);
+        Camera.main.transform.Translate(translation, Space.World);
     }
 
     void SetMode()
@@ -180,6 +181,10 @@ public class GridEditorController : MonoBehaviour
         if (Input.GetButton("ElevationEditMode"))
         {
             ActiveMode = eMouseMode.Elevation;
+        }
+        else if (Input.GetButton("TileTypeEditMode"))
+        {
+            ActiveMode = eMouseMode.TileType;
         }
         else
         {
@@ -208,6 +213,9 @@ public class GridEditorController : MonoBehaviour
                 break;
             case eMouseMode.Elevation:
                 ElevationClick(1);
+                break;
+            case eMouseMode.TileType:
+                TypeBrushClick();
                 break;
             default:
                 break;
@@ -270,6 +278,22 @@ public class GridEditorController : MonoBehaviour
                 clickedTile.HexDetails.Elevation = MaxElevation;
             clickedTile.SetAppearance();
             PlaceSelectionIndicator();
+        }
+    }
+
+    void TypeBrushClick()
+    {
+        Transform obj = GetClickedObject();
+        if (obj != null)
+        {
+            Tile clickedTile = obj.GetComponent<Tile>();
+            Debug.Log("Before " + clickedTile.HexDetails.Type.ModelId);
+            clickedTile.HexDetails.Type = new SnowTileType();
+            clickedTile.SetAppearance();
+            Debug.Log("After " + clickedTile.HexDetails.Type.ModelId);
+        }
+        else
+        {
         }
     }
 
