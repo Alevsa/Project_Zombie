@@ -11,10 +11,10 @@ public class Pathfinding : MonoBehaviour
         if (m_movingUnits.ContainsKey(moving))
         {
             if (m_movingUnits[moving].Target.Tile != target.Tile)
-                m_movingUnits[moving] = new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target);
+                m_movingUnits[moving] = new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile, true)), target);
         }
         else
-            m_movingUnits.Add(moving, new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile)), target));
+            m_movingUnits.Add(moving, new PathInformation(CalculatePath(new Graph(), moving.Tile, target.Tile, new Heuristic(target.Tile, true)), target));
 
         foreach(var p in m_movingUnits[moving].Path)
         {
@@ -36,6 +36,7 @@ public class Pathfinding : MonoBehaviour
             if (pathInfo.NextTile != pathInfo.Target.Tile)
             {
                 moving.Unit.transform.position = pathInfo.NextTile.transform.position;
+
                 moving.Tile = pathInfo.NextTile;
                 pathInfo.CurrentPosition--;
             }

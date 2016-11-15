@@ -18,16 +18,16 @@ public class GridEditorController : MonoBehaviour
     public Text TileTypeModeText;
     public Text TileDoodadModeText;
 
-    public void CreateWorld()
+    public void CreateGrid()
     {
-        GridManager.instance.WorldSize = int.Parse(GridSizeText.text);
-        GridManager.instance.CreateWorld((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), ModeText.text));
+        GridManager.instance.GridSize = int.Parse(GridSizeText.text);
+        GridManager.instance.CreateGrid((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), ModeText.text));
     }
 
-    public void SaveWorld()
+    public void SaveGrid()
     {
         List<HexInfo> mapToSave = new List<HexInfo>();
-        foreach (Tile tile in GridManager.instance.World.Values)
+        foreach (Tile tile in GridManager.instance.Grid.Values)
         {
             mapToSave.Add(tile.HexDetails);
         }
@@ -37,7 +37,7 @@ public class GridEditorController : MonoBehaviour
         stream.Close();
     }
 
-    public void LoadWorld()
+    public void loadGrid()
     {
         IFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream("Test.map", FileMode.Open, FileAccess.Read, FileShare.Read);

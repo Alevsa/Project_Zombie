@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using System;
 
 public class BattleManager : Singleton<BattleManager>
 {
@@ -15,19 +16,21 @@ public class BattleManager : Singleton<BattleManager>
     {
         Units = new List<UnitInformation>();
         m_pathfinding = GetComponent<Pathfinding>();
-        GridManager.instance.CreateWorld(GridManager.GridType.Square);
-        StartCoroutine(MoveAfterGridCreated());
+        GridManager.instance.CreateGrid(GridManager.GridType.Square);
+        SetupBattle();
     }
 
-    public IEnumerator MoveAfterGridCreated()
+    private void OnGridCreated(object sender, GridCreated e)
     {
-        while (GridManager.instance.GetWorld() == null)
-            yield return null;
+        MoveAfterGridCreated();
+        EventManager.Remove<GridCreated>(OnGridCreated);
+    }
 
-        var world = GridManager.instance.GetWorld();
-        UnitInformation testUnit = new UnitInformation(TestUnit, world.Values.First());
+    public void MoveAfterGridCreated()
+    {
+        UnitInformation testUnit = new UnitInformation(TestUnit, GridManager.instance.Grid.Values.First());
         AddUnit(testUnit);
-        UnitInformation target = new UnitInformation(TestTarget, world.Values.Last());
+        UnitInformation target = new UnitInformation(TestTarget,    GridManager.instance.Grid.Values.Last());
         AddUnit(target);
         StartCoroutine(MoveToTarget(testUnit, target));
     }
@@ -35,19 +38,28 @@ public class BattleManager : Singleton<BattleManager>
     public IEnumerator MoveToTarget(UnitInformation unit, UnitInformation target)
     {
         while (unit.Tile != target.Tile)
-        {
+        {      
             m_pathfinding.MoveToTarget(unit, target);
             yield return new WaitForSeconds(2f);
+       
         }
-
     }
 
 
     public void SetupBattle()
-    {       
+    {
+        EventManager.Add<GridCreated>(OnGridCreated);
         foreach (var unit in Units)
         {
             //place unit on his tile.
+        }
+    }
+
+    void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            EventManager.Send<GridCreated>(this, new GridCreated(GridManager.instance.Grid));
         }
     }
 
