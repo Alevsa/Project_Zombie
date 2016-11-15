@@ -7,16 +7,16 @@ public class InitBattleState : BattleState {
     public override void Enter()
     {
         base.Enter();
-        GridManager.instance.CreateWorld(GridManager.GridType.Square);
+        GridManager.instance.CreateGrid(GridManager.GridType.Square);
         StartCoroutine(Init());
     }
 
     IEnumerator Init()
     {
-        while (GridManager.instance.GetWorld() == null)
+        while (GridManager.instance.Grid == null)
             yield return null;
 
-        owner.world = GridManager.instance.GetWorld();
+        owner.world = GridManager.instance.Grid;
         PlaceUnits();
         yield return null;
         owner.ChangeState<TurnOrderState>();
