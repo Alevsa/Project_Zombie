@@ -47,7 +47,21 @@ public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
 
     #region IActive
     [Header("Turn Order")]
+    public int _initiativeGain;
     public int _initiative;
+
+    public int initiativeGain
+    {
+        get
+        {
+            return _initiativeGain;
+        }
+
+        set
+        {
+            _initiativeGain = value;
+        }
+    }
 
     public int initiative
     {
@@ -55,16 +69,14 @@ public class UnitInfo : MonoBehaviour, IKillable , IActive , IMovable{
         {
             return _initiative;
         }
-
         set
         {
             _initiative = value;
         }
     }
 
-   public void PushToController()
+    public void PushToController()
     {
-        TurnOrderController.instance.AddUnit(gameObject);
     }
     #endregion
 

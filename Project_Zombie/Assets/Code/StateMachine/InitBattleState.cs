@@ -15,20 +15,22 @@ public class InitBattleState : BattleState {
     {
         while (GridManager.instance.GetWorld() == null)
             yield return null;
+
+        owner.world = GridManager.instance.GetWorld();
         PlaceUnits();
         yield return null;
+        owner.ChangeState<TurnOrderState>();
     }
 
     private void PlaceUnits()
     {
-        var world = GridManager.instance.GetWorld();
+        System.Random rand = new System.Random();
 
-        foreach (UnitInfo unit in owner.unitList)
+        foreach (var unit in owner.unitList)
         {
-            System.Random rand = new System.Random();
-            unit.tile = world.ElementAt(rand.Next(0, world.Count)).Value;
+            unit.GetComponent<IMovable>().tile = owner.world.ElementAt(rand.Next(0, owner.world.Count)).Value;
 
-            unit.transform.position = unit.tile.transform.position;
+            Instantiate(unit, unit.GetComponent<IMovable>().tile.transform.position, Quaternion.identity);
         }
 
 

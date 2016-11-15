@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 public class BattleController : StateMachine {
 
-    public List<UnitInfo> unitList;
+    public List<GameObject> unitList;
+    public Dictionary<int[], Tile> world;
+    public BattleUI ui;
 
 
 	// Use this for initialization
