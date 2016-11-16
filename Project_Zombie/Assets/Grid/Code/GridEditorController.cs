@@ -37,7 +37,7 @@ public class GridEditorController : MonoBehaviour
         stream.Close();
     }
 
-    public void loadGrid()
+    public void LoadGrid()
     {
         IFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream("Test.map", FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -287,13 +287,30 @@ public class GridEditorController : MonoBehaviour
         if (obj != null)
         {
             Tile clickedTile = obj.GetComponent<Tile>();
-            Debug.Log("Before " + clickedTile.HexDetails.Type.ModelId);
-            clickedTile.HexDetails.Type = new SnowTileType();
+            clickedTile.HexDetails.Type = getTileType();
             clickedTile.SetAppearance();
-            Debug.Log("After " + clickedTile.HexDetails.Type.ModelId);
         }
         else
         {
+        }
+    }
+
+    BaseTileType getTileType()
+    {
+        switch (TileTypeModeText.text)
+        {
+            case "Dirt":
+                return new DirtTileType();
+            case "Snow":
+                return new SnowTileType();
+            case "Grass":
+                return new GrassTileType();
+            case "Stone":
+                return new StoneTileType();
+            case "Enamel":
+                return new EnamelTileType();
+            default:
+                throw new System.ArgumentException("Tile type not implemented!");
         }
     }
 

@@ -410,7 +410,7 @@ public class GridManager : Singleton<GridManager>
             tile.HexDetails = info;
             tile.Init();
         }
-        StartCoroutine("SetWorldNeighbours");
+        StartCoroutine("SetGridNeighbours");
     }
 
     private Vector3 HexSpaceToWorldSpace(Vector3 aCoord)
