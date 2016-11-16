@@ -16,7 +16,7 @@ public class BattleManager : Singleton<BattleManager>
     {
         Units = new List<UnitInformation>();
         m_pathfinding = GetComponent<Pathfinding>();
-        GridManager.instance.CreateGrid(GridManager.GridType.Square);
+        GridManager.instance.CreateGrid(GridManager.GridType.Square, new GrassTileType());
         SetupBattle();
     }
 

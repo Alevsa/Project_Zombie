@@ -7,7 +7,7 @@ public class InitBattleState : BattleState {
     public override void Enter()
     {
         base.Enter();
-        GridManager.instance.CreateGrid(GridManager.GridType.Square);
+        GridManager.instance.CreateGrid(GridManager.GridType.Square, new GrassTileType());
         StartCoroutine(Init());
     }
 

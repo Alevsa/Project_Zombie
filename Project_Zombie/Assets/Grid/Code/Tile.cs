@@ -44,8 +44,6 @@ public class Tile : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, -HexDetails.Elevation);
         foreach (Transform t in transform)
         {
-            Debug.Log(HexDetails.Type.ModelId);
-            Debug.Log(t.name);
             if (t.name == HexDetails.Type.ModelId)
             {
                 t.gameObject.SetActive(true);

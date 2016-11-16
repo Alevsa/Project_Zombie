@@ -29,6 +29,7 @@ public class GridManager : Singleton<GridManager>
     // These affect the building of a disc shaped grid. (Smoothing isn't a big deal with small grids but I'm leaving it in regardless)
     public int SmoothingFactor = 4;
     public int SmoothingModifier = 4;
+    private BaseTileType mDefaultTileType;
 
     private void Init()
     {
@@ -39,9 +40,10 @@ public class GridManager : Singleton<GridManager>
         Grid = new Dictionary<int[], Tile>(new EqualityComparer());
     }
 
-    public void CreateGrid(GridType type)
+    public void CreateGrid(GridType type, BaseTileType aTileType)
     {
         Init();
+        mDefaultTileType = aTileType;
         StartCoroutine(Sequence
         (
              CreateGridOfType(type)
@@ -54,6 +56,7 @@ public class GridManager : Singleton<GridManager>
     {
         foreach (Tile tile in Grid.Values)
         {
+            tile.HexDetails.Type = mDefaultTileType;
             tile.Init();
         }
         yield return null;

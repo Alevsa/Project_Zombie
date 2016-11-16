@@ -11,17 +11,16 @@ public class GridEditorController : MonoBehaviour
     public Text CreateModeText;
     public InputField GridSizeText;
     public InputField ElevationText;
-//    public InputField NameText;
-//    public InputField DescriptionText;
     public Toggle DeployableToggle;
     public GameObject SelectionPanel;
     public Text TileTypeModeText;
     public Text TileDoodadModeText;
-
+    public Text CreateTileTypeText;
     public void CreateGrid()
     {
         GridManager.instance.GridSize = int.Parse(GridSizeText.text);
-        GridManager.instance.CreateGrid((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType), CreateModeText.text));
+        GridManager.instance.CreateGrid((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType) , CreateModeText.text)
+                                        , getTileType(CreateTileTypeText.text));
     }
 
     public void SaveGrid()
@@ -44,6 +43,12 @@ public class GridEditorController : MonoBehaviour
         HexInfo[] loadedInfo = (HexInfo[])formatter.Deserialize(stream);
         stream.Close();
         GridManager.instance.LoadMap(loadedInfo);
+    }
+
+    public void SetElevationByInputBox()
+    {
+        SelectedTile.HexDetails.Elevation = int.Parse(ElevationText.text);
+        SelectedTile.SetAppearance();
     }
 
     public void ClampElevationInput()
@@ -76,20 +81,19 @@ public class GridEditorController : MonoBehaviour
     public void IncrementSelectedTileElevation(int aQuantity)
     {
         int newElevation = SelectedTile.HexDetails.Elevation + aQuantity;
-        if (newElevation < MinElevation || newElevation > MaxElevation)
-        {
-        }
-        else 
+        if (newElevation >= MinElevation && newElevation <= MaxElevation)
         {
             SelectedTile.HexDetails.Elevation = newElevation;
             SelectedTile.SetAppearance();
         }
+        SyncSelectionPanel();
     }
 
-    void InitialiseSelectionPanel()
+    void SyncSelectionPanel()
     {
         SelectionPanel.SetActive(true);
         DeployableToggle.isOn = SelectedTile.HexDetails.DeploymentTile;
+        ElevationText.text = SelectedTile.HexDetails.Elevation.ToString();
     }
 
     void SetTypeMode()
@@ -122,6 +126,7 @@ public class GridEditorController : MonoBehaviour
     public int MaxGridSize = 40;
     public int MinGridSize = 1;
     public Transform SelectionIndicator;
+    private List<Transform> mAlteredTiles;
 
     enum eMouseMode { Select ,Elevation ,TileType }
     eMouseMode ActiveMode;
@@ -194,11 +199,15 @@ public class GridEditorController : MonoBehaviour
 
     void MouseInput()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            mAlteredTiles = new List<Transform>();
+        }
+        else if (Input.GetKey(KeyCode.Mouse0))
         {
             LeftClick();
         }
-        else if (Input.GetKeyDown(KeyCode.Mouse1))
+        else if (Input.GetKey(KeyCode.Mouse1))
         {
             RightClick();
         }
@@ -228,7 +237,7 @@ public class GridEditorController : MonoBehaviour
         if (obj != null)
         {
             SelectedTile = obj.GetComponent<Tile>();
-            InitialiseSelectionPanel();
+            SyncSelectionPanel();
         }
         else
         {
@@ -268,16 +277,16 @@ public class GridEditorController : MonoBehaviour
     void ElevationClick(int aDirection)
     {
         Transform obj = GetClickedObject();
-        if (obj != null)
+        if (obj != null && !mAlteredTiles.Contains(obj))
         {
             Tile clickedTile = obj.GetComponent<Tile>();
             clickedTile.HexDetails.Elevation += aDirection;
             if (clickedTile.HexDetails.Elevation > MaxElevation)
-                clickedTile.HexDetails.Elevation = MinElevation;
-            else if (clickedTile.HexDetails.Elevation < MinElevation)
                 clickedTile.HexDetails.Elevation = MaxElevation;
+            else if (clickedTile.HexDetails.Elevation < MinElevation)
+                clickedTile.HexDetails.Elevation = MinElevation;
             clickedTile.SetAppearance();
-            PlaceSelectionIndicator();
+            mAlteredTiles.Add( obj);
         }
     }
 
@@ -287,7 +296,7 @@ public class GridEditorController : MonoBehaviour
         if (obj != null)
         {
             Tile clickedTile = obj.GetComponent<Tile>();
-            clickedTile.HexDetails.Type = getTileType();
+            clickedTile.HexDetails.Type = getTileType(TileTypeModeText.text);
             clickedTile.SetAppearance();
         }
         else
@@ -295,9 +304,9 @@ public class GridEditorController : MonoBehaviour
         }
     }
 
-    BaseTileType getTileType()
+    BaseTileType getTileType(string aText)
     {
-        switch (TileTypeModeText.text)
+        switch (aText)
         {
             case "Dirt":
                 return new DirtTileType();
@@ -310,7 +319,7 @@ public class GridEditorController : MonoBehaviour
             case "Enamel":
                 return new EnamelTileType();
             default:
-                throw new System.ArgumentException("Tile type not implemented!");
+                throw new Exception("Tile type not implemented!");
         }
     }
 
