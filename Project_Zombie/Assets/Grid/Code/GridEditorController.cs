@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEditor;
 
 public class GridEditorController : MonoBehaviour
 {
@@ -15,12 +16,13 @@ public class GridEditorController : MonoBehaviour
     public GameObject SelectionPanel;
     public Text TileTypeModeText;
     public Text TileDoodadModeText;
-    public Text CreateTileTypeText;
+
     public void CreateGrid()
     {
         GridManager.instance.GridSize = int.Parse(GridSizeText.text);
         GridManager.instance.CreateGrid((GridManager.GridType)Enum.Parse(typeof(GridManager.GridType) , CreateModeText.text)
-                                        , getTileType(CreateTileTypeText.text));
+                                        , getTileType(TileTypeModeText.text));
+        SnapToTile(GridManager.instance.Grid[new int[] { 0, 0, 0 }]);
     }
 
     public void SaveGrid()
@@ -30,19 +32,26 @@ public class GridEditorController : MonoBehaviour
         {
             mapToSave.Add(tile.HexDetails);
         }
+        string path = EditorUtility.SaveFilePanel("Save as...", "", "map", "MAP");
+        if (path == "")
+            return;
         IFormatter formatter = new BinaryFormatter();
-        Stream stream = new FileStream("Test.map", FileMode.Create, FileAccess.Write, FileShare.None);
+        Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
         formatter.Serialize(stream, mapToSave.ToArray());
         stream.Close();
     }
 
     public void LoadGrid()
     {
+        string path = EditorUtility.OpenFilePanel("Load map", "", "MAP");
+        if (path == "")
+            return;
         IFormatter formatter = new BinaryFormatter();
-        Stream stream = new FileStream("Test.map", FileMode.Open, FileAccess.Read, FileShare.Read);
+        Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         HexInfo[] loadedInfo = (HexInfo[])formatter.Deserialize(stream);
         stream.Close();
         GridManager.instance.LoadMap(loadedInfo);
+        SnapToTile(GridManager.instance.Grid[new int[] { 0, 0, 0 }]);
     }
 
     public void SetElevationByInputBox()
@@ -288,6 +297,11 @@ public class GridEditorController : MonoBehaviour
             clickedTile.SetAppearance();
             mAlteredTiles.Add( obj);
         }
+    }
+
+    void SnapToTile(Tile aTile)
+    {
+        Camera.main.transform.position = new Vector3(aTile.transform.position.x , aTile.transform.position.y, -30) ;
     }
 
     void TypeBrushClick()
