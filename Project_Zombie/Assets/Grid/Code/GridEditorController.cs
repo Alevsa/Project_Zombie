@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+#if UNITY_EDITOR
 using UnityEditor;
-
+# endif
 public class GridEditorController : MonoBehaviour
 {
     public Text CreateModeText;
@@ -32,9 +33,13 @@ public class GridEditorController : MonoBehaviour
         {
             mapToSave.Add(tile.HexDetails);
         }
+#if UNITY_EDITOR
         string path = EditorUtility.SaveFilePanel("Save as...", "", "map", "MAP");
         if (path == "")
             return;
+#else
+        string path = "Test.map";
+#endif
         IFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
         formatter.Serialize(stream, mapToSave.ToArray());
@@ -43,9 +48,13 @@ public class GridEditorController : MonoBehaviour
 
     public void LoadGrid()
     {
+#if UNITY_EDITOR
         string path = EditorUtility.OpenFilePanel("Load map", "", "MAP");
         if (path == "")
             return;
+#else
+        string path = "Test.map";
+#endif
         IFormatter formatter = new BinaryFormatter();
         Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         HexInfo[] loadedInfo = (HexInfo[])formatter.Deserialize(stream);
