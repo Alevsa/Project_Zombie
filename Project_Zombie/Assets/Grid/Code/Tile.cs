@@ -44,7 +44,7 @@ public class Tile : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y, -HexDetails.Elevation);
         foreach (Transform t in transform)
         {
-            if (t.name == HexDetails.Type.ModelId)
+            if (t.name == HexDetails.Type.ModelId || t.name == HexDetails.Type.Name + HexDetails.Doodad.ModelId)
             {
                 t.gameObject.SetActive(true);
                 mModel = t.gameObject;
@@ -56,8 +56,8 @@ public class Tile : MonoBehaviour
         }
         mMeshRenderer = mModel.GetComponent<MeshRenderer>();
         mMeshRenderer.materials = new Material[] {
-             Resources.Load("3DModels/Materials/" + HexDetails.Type.CapTexture) as Material
-            ,Resources.Load("3DModels/Materials/" + HexDetails.Type.SideTexture) as Material
+             Resources.Load("3DModels/HexModels/Materials/" + HexDetails.Type.CapTexture) as Material
+            ,Resources.Load("3DModels/HexModels/Materials/" + HexDetails.Type.SideTexture) as Material
         };
     }
 

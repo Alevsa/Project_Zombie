@@ -327,6 +327,7 @@ public class GridEditorController : MonoBehaviour
         }
     }
 
+    // There's proly a better way to do this.
     BaseTileType getTileType(string aText)
     {
         switch (aText)
