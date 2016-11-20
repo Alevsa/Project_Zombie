@@ -16,7 +16,7 @@ public class GridEditorController : MonoBehaviour
     public Toggle DeployableToggle;
     public GameObject SelectionPanel;
     public Text TileTypeModeText;
-    public Text TileDoodadModeText;
+    public Text DoodadTypeText;
 
     public void CreateGrid()
     {
@@ -287,6 +287,9 @@ public class GridEditorController : MonoBehaviour
             case eMouseMode.Elevation:
                 ElevationClick(-1);
                 break;
+            case eMouseMode.TileType:
+                DoodadClick();
+                break;
             default:
                 break;
         }
@@ -344,6 +347,35 @@ public class GridEditorController : MonoBehaviour
                 return new EnamelTileType();
             default:
                 throw new Exception("Tile type not implemented!");
+        }
+    }
+
+    void DoodadClick()
+    {
+        Transform obj = GetClickedObject();
+        if (obj != null)
+        {
+            Tile clickedTile = obj.GetComponent<Tile>();
+            clickedTile.HexDetails.Doodad = getDoodadType(DoodadTypeText.text);
+            clickedTile.SetAppearance();
+        }
+        else
+        {
+        }
+    }
+
+    BaseDoodad getDoodadType(string aText)
+    {
+        switch (aText)
+        {
+            case "Tree":
+                return new TreeDoodad();
+            case "Clear Doodads":
+                return new EmptyDoodad();
+            default:
+                throw new Exception("Doodad not implemented!");
+               
+
         }
     }
 

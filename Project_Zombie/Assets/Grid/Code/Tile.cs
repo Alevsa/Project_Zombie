@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour
     public bool Pathable = true;
     public int MovementCost = 100;
     private GameObject mModel;
+    private GameObject mDoodadModel;
     private MeshRenderer mMeshRenderer;
 
     private GameObject m_activeHexagon;
@@ -42,18 +43,40 @@ public class Tile : MonoBehaviour
     public void SetAppearance()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, -HexDetails.Elevation);
+        if (mDoodadModel != null)
+        {
+            mDoodadModel.SetActive(false);
+            mDoodadModel = null;
+        }
+        if (mModel != null)
+        {
+            mModel.SetActive(false);
+            mModel = null;
+        }
+
         foreach (Transform t in transform)
         {
-            if (t.name == HexDetails.Type.ModelId || t.name == HexDetails.Type.Name + HexDetails.Doodad.ModelId)
+            if (t.name == HexDetails.Type.ModelId)
             {
                 t.gameObject.SetActive(true);
                 mModel = t.gameObject;
+            }
+            else if (t.name == HexDetails.Type.Name + HexDetails.Doodad.ModelId)
+            {
+                Debug.Log(HexDetails.Type.Name + HexDetails.Doodad.ModelId);
+                t.gameObject.SetActive(true);
+                mDoodadModel = t.gameObject;
             }
             else
             {
                 t.gameObject.SetActive(false);
             }
         }
+        if (mDoodadModel == null)
+        {
+            HexDetails.Doodad = new EmptyDoodad();
+        }
+
         mMeshRenderer = mModel.GetComponent<MeshRenderer>();
         mMeshRenderer.materials = new Material[] {
              Resources.Load("3DModels/HexModels/Materials/" + HexDetails.Type.CapTexture) as Material
